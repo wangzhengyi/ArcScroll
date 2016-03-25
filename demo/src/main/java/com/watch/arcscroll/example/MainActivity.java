@@ -19,6 +19,7 @@ public class MainActivity extends Activity {
     }
 
     public void startScrollActivity(View view) {
-
+        Intent intent = new Intent(MainActivity.this, ArcScrollActivity.class);
+        startActivity(intent);
     }
 }

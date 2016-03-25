@@ -1,12 +1,3 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:1.5.0'
-    }
-}
-
 apply plugin: 'com.android.library'
 
 android {
@@ -20,17 +11,3 @@ android {
         versionName "1.0.0"
     }
 }
-
-task clearJar(type: Delete) {
-    delete 'build/libs/ArcScroll.jar'
-    delete 'libs/ArcScroll.jar'
-}
-
-task makeJar(type: Copy) {
-    from('build/intermediates/bundles/release')
-    into('libs/')
-    include('classes.jar')
-    rename('classes.jar', 'ArcScroll.jar')
-}
-
-makeJar.dependsOn(clearJar, build)
