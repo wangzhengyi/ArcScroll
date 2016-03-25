@@ -3,9 +3,7 @@
     <declare-styleable name="ArcScrollBarView">
         <attr name="thumb_color" format="color" />
         <attr name="track_color" format="color" />
-        <attr name="sweep_angle" format="float" />
         <attr name="margin_top" format="dimension" />
         <attr name="stroke_width" format="dimension" />
-        <attr name="has_actionbar" format="boolean" />
     </declare-styleable>
 </resources>

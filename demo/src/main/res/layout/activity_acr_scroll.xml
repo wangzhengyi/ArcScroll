@@ -7,7 +7,8 @@
     <com.watch.arcscroll.ArcScrollView
         android:id="@+id/id_arc_scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:scrollbars="none">
 
         <LinearLayout
             android:id="@+id/id_container_layout"
