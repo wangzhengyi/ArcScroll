@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.watch.arcscroll.ArcScrollBarView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/id_arc_scroll_bar"
+    style="@style/ArcScrollBarView_Default"/>

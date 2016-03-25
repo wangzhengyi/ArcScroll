@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/id_listview_arc_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="@string/listview"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:background="@drawable/button_list_bg"
+        android:onClick="startListActivity"/>
+
+    <Button
+        android:id="@+id/id_scrollview_arc_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="@string/ScrollView"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:background="@drawable/button_scroll_bg"
+        android:onClick="startScrollActivity"/>
+</LinearLayout>
