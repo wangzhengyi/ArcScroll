@@ -1,15 +1,17 @@
 # ArcScroll
 
-ArcScroll是用来适配屏幕的ScrollBar控件。目前支持替换ScrollView和ListView等滑动控件的原生ScrollBar。
+ArcScroll是用来适配圆形屏幕的ScrollBar弧形滚动条控件。目前支持替换ScrollView和ListView等滑动控件的原生ScrollBar。
 
 ******
 
 # Demo
 
 跟ListView适配:
+
 ![ListView](https://github.com/wangzhengyi/ArcScroll/raw/master/screenshots/list_view_with_arc_scroll.png)
 
 跟ScrollView适配:
+
 ![ScrollView](https://github.com/wangzhengyi/ArcScroll/raw/master/screenshots/scrollview_with_arc_scroll.png)
 
 ******
