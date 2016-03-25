@@ -8,10 +8,10 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 
 @SuppressWarnings("unused")
 public class ArcScrollBarView extends View {
@@ -78,6 +78,7 @@ public class ArcScrollBarView extends View {
     private RectF oval;
 
     private int mActionBarHeight;
+    private boolean once;
 
     public ArcScrollBarView(Context context) {
         this(context, null, 0);
@@ -90,61 +91,31 @@ public class ArcScrollBarView extends View {
     public ArcScrollBarView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
-        mActionBarHeight = getActionBarHeight(context);
+        // 获取ActionBar的高度
+        getActionBarHeight();
 
         TypedArray ta = context.getTheme().obtainStyledAttributes(attrs,
                 R.styleable.ArcScrollBarView, defStyle, 0);
-        for (int i = 0; i < ta.length(); i++) {
-            int index = ta.getIndex(i);
-            if (index == R.styleable.ArcScrollBarView_margin_top) {
-                marginTop = (int) ta.getDimension(index, TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_DIP, DEFAULT_MARGIN_TOP,
-                        getResources().getDisplayMetrics()));
-                marginTop = mActionBarHeight == 0 ? marginTop : mActionBarHeight;
-            } else if (index == R.styleable.ArcScrollBarView_thumb_color) {
-                thumbPaintColor = ta.getColor(index, Color.parseColor(THUMB_PAINT_COLOR));
-
-            } else if (index == R.styleable.ArcScrollBarView_track_color) {
-                trackPaintColor = ta.getColor(index, Color.parseColor(TRACK_PAINT_COLOR));
-
-            } else if (index == R.styleable.ArcScrollBarView_stroke_width) {
-                // 画笔宽度应该为特定的像素值
-                paintStrokeWidth = (int) ta.getDimension(index, TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_PX, DEFAULT_PAINT_STORKE_WIDTH,
-                        getResources().getDisplayMetrics()));
-            }
-        }
-
-
-
+        marginTop = (int) ta.getDimension(R.styleable.ArcScrollBarView_margin_top, TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_PX, DEFAULT_MARGIN_TOP,
+                getResources().getDisplayMetrics()));
+        marginTop += mActionBarHeight;
+        thumbPaintColor = ta.getColor(R.styleable.ArcScrollBarView_thumb_color,
+                Color.parseColor(THUMB_PAINT_COLOR));
+        trackPaintColor = ta.getColor(R.styleable.ArcScrollBarView_track_color,
+                Color.parseColor(TRACK_PAINT_COLOR));
+        paintStrokeWidth = (int) ta.getDimension(R.styleable.ArcScrollBarView_stroke_width,
+                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, DEFAULT_PAINT_STORKE_WIDTH,
+                getResources().getDisplayMetrics()));
         ta.recycle();
 
-        initData(context);
+        initPaint();
         setBackgroundColor(Color.TRANSPARENT);
     }
 
-    private void initData(Context context) {
+    private void initPaint() {
         initTrackPaint();
         initThumbPaint();
-
-        // 设置矩形的四角坐标和内切圆半径
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        wm.getDefaultDisplay().getMetrics(displayMetrics);
-        // 获取屏幕的宽度和高度
-        int screenWidth = displayMetrics.widthPixels;
-        int screenHeight = displayMetrics.heightPixels;
-        // 内切圆外接矩形的左,上,右,下坐标
-        float rectfLeft = 0;
-        float rectfTop = mActionBarHeight == 0 ? 0 : mActionBarHeight * -1;
-        float rectfRight = screenWidth - paintStrokeWidth;
-        float rectfBottom = mActionBarHeight == 0 ? screenHeight - paintStrokeWidth :
-                screenHeight - mActionBarHeight - paintStrokeWidth;
-        radius = (rectfRight - rectfLeft) / 2;
-        oval = new RectF(rectfLeft, rectfTop, rectfRight, rectfBottom);
-
-        // 设置圆弧的起始角度和终止角度
-        initStartAndEndAngle();
     }
 
     private void initTrackPaint() {
@@ -171,19 +142,57 @@ public class ArcScrollBarView extends View {
      */
     private void initStartAndEndAngle() {
         float distance = radius - marginTop;
+        Log.e("TAG", "radius=" + radius + ", marginTop=" + marginTop + ", distance=" + distance);
         double cosAngle = Math.acos(distance * 1.0 / radius) * 180 / Math.PI;
         trackStartAngle = (270 + (int) cosAngle) % 360;
         trackSweepAngle = 2 * (90 - (int) cosAngle);
         thumbStartAngle = trackStartAngle;
+        Log.e("TAG", "startAngle=" + trackStartAngle + ", sweepAngle=" + trackSweepAngle);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        if (!once && !isInEditMode()) {
+            once = true;
+            setup();
+        }
+    }
+
+    private void setup() {
+        // 设置矩形的四角坐标和内切圆半径
+        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+
+        // 获取屏幕的宽度和高度
+        int screenWidth = displayMetrics.widthPixels;
+        int screenHeight = displayMetrics.heightPixels;
+
+        int viewHeight = getMeasuredHeight();
+        int viewWidth = getMeasuredWidth();
+        Log.e("TAG", "view height=" + viewHeight + ", view width=" + viewWidth);
+
+        // 内切圆外接矩形的左,上,右,下坐标
+        float rectangleLeft = 0;
+        float rectangleTop = mActionBarHeight == 0 ? 0 : mActionBarHeight * -1;
+        float rectangleRight = screenWidth - paintStrokeWidth;
+        float rectangleBottom = mActionBarHeight == 0 ? screenHeight - paintStrokeWidth :
+                screenHeight - mActionBarHeight - paintStrokeWidth;
+        radius = (rectangleRight - rectangleLeft) / 2;
+        oval = new RectF(rectangleLeft, rectangleTop, rectangleRight, rectangleBottom);
+
+        // 设置圆弧的起始角度和终止角度
+        initStartAndEndAngle();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        // 绘制轨道
-        canvas.drawArc(oval, trackStartAngle, trackSweepAngle, false, trackPaint);
-        // 绘制滑块
-        canvas.drawArc(oval, thumbStartAngle, thumbSweepAngle, false, thumbPaint);
+        if (!isInEditMode()) {
+            // 绘制轨道
+            canvas.drawArc(oval, trackStartAngle, trackSweepAngle, false, trackPaint);
+            // 绘制滑块
+            canvas.drawArc(oval, thumbStartAngle, thumbSweepAngle, false, thumbPaint);
+        }
     }
 
     public void setStartAngle(int firstVisibleItem, int visibleItemCount, int totalItemCount) {
@@ -196,7 +205,7 @@ public class ArcScrollBarView extends View {
         invalidate();
     }
 
-    public void setStartAngleForScrollView(int firstItemscrollY, int visibleHeight, int totalHeight) {
+    public void setStartAngleForScrollView(int firstItemScrollY, int visibleHeight, int totalHeight) {
         if (mActionBarHeight > 0) {
             visibleHeight = visibleHeight - mActionBarHeight;
         }
@@ -204,7 +213,7 @@ public class ArcScrollBarView extends View {
         thumbSweepAngle = (float) (trackSweepAngle * 1.0 * visibleHeight / totalHeight);
 
         // 计算thumb的起始角度
-        thumbStartAngle = (float) ((firstItemscrollY * 1.0 / (totalHeight - visibleHeight)
+        thumbStartAngle = (float) ((firstItemScrollY * 1.0 / (totalHeight - visibleHeight)
                 * (trackSweepAngle - thumbSweepAngle) + trackStartAngle) % 360);
         invalidate();
     }
@@ -219,13 +228,18 @@ public class ArcScrollBarView extends View {
         return false;
     }
 
-    private int getActionBarHeight(Context context) {
-        TypedValue tv = new TypedValue();
-        int actionBarHeight = 0;
-        if (context.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
-            actionBarHeight = TypedValue.complexToDimensionPixelSize(
-                    tv.data, getResources().getDisplayMetrics());
+    private int getActionBarHeight() {
+        final TypedArray styledAttributes = getContext().getTheme().obtainStyledAttributes(
+                new int[] {android.R.attr.actionBarSize, android.R.attr.windowActionBar});
+
+        mActionBarHeight = (int) styledAttributes.getDimension(0, 0);
+        boolean windowActionBar = styledAttributes.getBoolean(1, false);
+        if (!windowActionBar) {
+            // 当前Theme不包含ActionBar，则将其高度设置为0
+            mActionBarHeight = 0;
         }
-        return actionBarHeight;
+        styledAttributes.recycle();
+
+        return mActionBarHeight;
     }
 }

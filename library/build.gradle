@@ -19,24 +19,6 @@ android {
         versionCode 20160324
         versionName "1.0.0"
     }
-
-
-    sourceSets {
-        main {
-            java {
-                srcDir 'src/main/java'
-            }
-            /*
-            resources {
-                srcDir 'src/main/'
-                exclude 'AndroidManifest.xml'
-            }
-            res {
-                srcDir 'src/main/res'
-            }
-            */
-        }
-    }
 }
 
 task clearJar(type: Delete) {
