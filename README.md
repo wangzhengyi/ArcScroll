@@ -33,8 +33,17 @@ dependencies {
 ## Android.mk
 
 ```makefile
-LOCAL_SRC_FILES += $(call all-java-files-under, $(LOCAL_PATH)/../ArcScroll/)
-LOCAL_RESOURCE_DIR += 
+arc_scroll_dir := ../ArcScroll
+src_dirs := src $(arc_scroll_dir)/src
+res_dirs := res $(arc_scroll_dir)/res
+
+LOCAL_SRC_FILES := $(call all-java-files-under, src)
+LOCAL_RESOURCE_DIR := $(addprefix $(LOCAL_PATH)/, $(res_dirs))
+LOCAL_SRC_FILES := $(call all-java-files-under, $(src_dirs))
+
+LOCAL_AAPT_FLAGS := \
+    --auto-add-overlay \
+    --extra-packages com.watch.arcscroll
 ```
 
 ******
