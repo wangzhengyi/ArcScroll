@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="ArcScrollBarView">
-        <attr name="thumb_color" format="color" />
-        <attr name="track_color" format="color" />
-        <attr name="margin_top" format="dimension" />
-        <attr name="stroke_width" format="dimension" />
+        <attr name="lib_thumb_color" format="color" />
+        <attr name="lib_track_color" format="color" />
+        <attr name="lib_margin_top" format="dimension" />
+        <attr name="lib_stroke_width" format="dimension" />
     </declare-styleable>
 </resources>

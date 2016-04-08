@@ -96,21 +96,22 @@ public class ArcScrollBarView extends View {
 
         TypedArray ta = context.getTheme().obtainStyledAttributes(attrs,
                 R.styleable.ArcScrollBarView, defStyle, 0);
-        marginTop = (int) ta.getDimension(R.styleable.ArcScrollBarView_margin_top, TypedValue.applyDimension(
+        marginTop = (int) ta.getDimension(R.styleable.ArcScrollBarView_lib_margin_top, TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_PX, DEFAULT_MARGIN_TOP,
                 getResources().getDisplayMetrics()));
         marginTop += mActionBarHeight;
-        thumbPaintColor = ta.getColor(R.styleable.ArcScrollBarView_thumb_color,
+        thumbPaintColor = ta.getColor(R.styleable.ArcScrollBarView_lib_thumb_color,
                 Color.parseColor(THUMB_PAINT_COLOR));
-        trackPaintColor = ta.getColor(R.styleable.ArcScrollBarView_track_color,
+        trackPaintColor = ta.getColor(R.styleable.ArcScrollBarView_lib_track_color,
                 Color.parseColor(TRACK_PAINT_COLOR));
-        paintStrokeWidth = (int) ta.getDimension(R.styleable.ArcScrollBarView_stroke_width,
+        paintStrokeWidth = (int) ta.getDimension(R.styleable.ArcScrollBarView_lib_stroke_width,
                 TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, DEFAULT_PAINT_STORKE_WIDTH,
-                getResources().getDisplayMetrics()));
+                        getResources().getDisplayMetrics()));
         ta.recycle();
 
         initPaint();
         setBackgroundColor(Color.TRANSPARENT);
+        setup();
     }
 
     private void initPaint() {
@@ -150,15 +151,9 @@ public class ArcScrollBarView extends View {
         Log.e("TAG", "startAngle=" + trackStartAngle + ", sweepAngle=" + trackSweepAngle);
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        if (!once && !isInEditMode()) {
-            once = true;
-            setup();
-        }
-    }
-
+    /**
+     * 初始化坐标和角度
+     */
     private void setup() {
         // 设置矩形的四角坐标和内切圆半径
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
@@ -166,10 +161,6 @@ public class ArcScrollBarView extends View {
         // 获取屏幕的宽度和高度
         int screenWidth = displayMetrics.widthPixels;
         int screenHeight = displayMetrics.heightPixels;
-
-        int viewHeight = getMeasuredHeight();
-        int viewWidth = getMeasuredWidth();
-        Log.e("TAG", "view height=" + viewHeight + ", view width=" + viewWidth);
 
         // 内切圆外接矩形的左,上,右,下坐标
         float rectangleLeft = 0;
@@ -230,7 +221,7 @@ public class ArcScrollBarView extends View {
 
     private int getActionBarHeight() {
         final TypedArray styledAttributes = getContext().getTheme().obtainStyledAttributes(
-                new int[] {android.R.attr.actionBarSize, android.R.attr.windowActionBar});
+                new int[]{android.R.attr.actionBarSize, android.R.attr.windowActionBar});
 
         mActionBarHeight = (int) styledAttributes.getDimension(0, 0);
         boolean windowActionBar = styledAttributes.getBoolean(1, false);
